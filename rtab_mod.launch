@@ -1,0 +1,75 @@
+<launch>
+  <arg name="gui_cfg"           default="~/.ros/rtabmap_gui.ini" />
+  <arg name="launch_prefix"     default=""/>
+  <arg name="output"            default="screen"/>
+  <arg name="imu_topic"         default="/imu/data"/>
+  <!-- <node pkg="tf" type="static_transform_publisher" name="base_to_t265_tf" args="0.0 0.0 0.0 0.0 0.0 0.0 /base_link /t265_link 100" /> -->
+  <node pkg="tf" type="static_transform_publisher" name="d400_to_t265_tf" args="0.0 0.0 0.0 -3.14 0.0 0.0 /t265_link /d400_link 100" />
+
+  <group ns="rtabmap">
+  	<node name="rtabmap" pkg="rtabmap_ros" type="rtabmap" output="screen" args="--delete_db_on_start">
+    	<param name="odom_frame_id"        type="string" value="t265_odom_frame"/> <!-- the fixed frame used by robot_localization -->
+    	<param name="odom_tf_angular_variance" type="double" value="0.0005"/>
+    	<param name="odom_tf_linear_variance"  type="double" value="0.0001"/> <!-- 1 cm stddev error -->
+        <param name="DetectionRate" type="string" value="10"/>
+      <param name="frame_id" type="string" value="t265_link"/>
+      <param name="subscribe_depth" type="bool" value="true"/>
+      <param name="subscribe_odom_info" type="bool" value="false"/>
+    	<!-- Add param name="subscribe_odom_info" type="bool" value="true"/> to fix problems with rtabmap subscribing to odom_info -->
+      <!--  <remap from="odom" to="/odometry/filtered"/> -->
+      <!--remap from="rgb/image" to="/camera/color/image_raw"/-->
+    	<!--remap from="depth/image" to="/camera/aligned_depth_to_color/image_raw"/-->
+    	<!--remap from="rgb/camera_info" to="/camera/color/camera_info"/-->
+      <remap from="rgb/image" to="/d435/color/image_raw"/>
+      <remap from="depth/image" to="/d435/aligned_depth_to_color/image_raw"/>
+      <remap from="rgb/camera_info" to="/d435/color/camera_info"/>
+    	<param name="queue_size" type="int" value="100"/>
+      <!-- RTAB-Map's parameters -->
+    	<param name="RGBD/NeighborLinkRefining" type="string" value="true"/>
+    	<param name="RGBD/ProximityBySpace" 	type="string" value="true"/>
+    	<param name="RGBD/AngularUpdate"    	type="string" value="0.01"/>
+    	<param name="RGBD/LinearUpdate"     	type="string" value="0.01"/>
+    	<param name="RGBD/OptimizeFromGraphEnd" type="string" value="false"/>
+    	<param name="Reg/Force3DoF"      	type="string" value="true"/> <!--same as optimizer/slam2D -->
+    	<param name="Reg/Strategy"          	type="string" value="0"/> <!-- 1=ICP -->
+    	<param name="Reg/Force3DoF"         	type="string" value="true"/>
+    	<param name="Vis/MinInliers"        	type="string" value="5"/>
+    	<param name="Vis/InlierDistance"    	type="string" value="0.1"/>
+    	<param name="Rtabmap/TimeThr"       	type="string" value="700"/>
+    	<param name="Mem/RehearsalSimilarity"   type="string" value="0.45"/>
+    	<!-- <param name="Grid/CellSize" type="string" value="0.05"/> -->
+    	<param name="Kp/MaxFeatures" type="string" value="400"/>
+      <param name="Optimizer/Strategy" type="string" value="2"/> <!-- 0 is TORO, Default G20-->
+      <param name="RGBD/OptimizeMaxError" type="string" value="0"/> <!--When using TORO, seto to 0,otherwise set to 1-->
+      <param name="Kp/DetectorStrategy" type="string" value="6"/> <!--0=SURF 1=SIFT 2=ORB 3=FAST/FREAK 4=FAST/BRIEF 5=GFTT/FREAK 6=GFTT/BRIEF(default) 7=BRISK 8=GFTT/ORB 9=KAZE-->
+      <param name="RGBD/LoopClosureReextractFeatures" type="string" value="true"/> <!--extract features even if there are some already in the node-->
+      <!--  <param name="Grid/FromDepth" type="string" value="false"/> -->
+      <!-- <param name="RGBD/ProximityPathMaxNeighbors" type="string" value="10"/> -->
+      <param name="Vis/FeatureType" type="string" value="6"/> <!--suppress warning,want to be same as KP/detectorstrategy -->
+    </node>
+
+    <!-- Visualisation RTAB-Map -->
+    <node pkg="rtabmap_ros" type="rtabmapviz" name="rtabmapviz" args="-d $(arg gui_cfg)" output="$(arg output)" launch-prefix="$(arg launch_prefix)">
+      <!-- <node pkg="rviz" type="rviz" name="rtabmapviz" args="-d $(find rtabmap_ros)/launch/config/rgbd.rviz"/> -->
+      <!-- <node pkg="nodelet" type="nodelet" name="points_xyzrgb" args="standalone rtabmap_ros/point_cloud_xyzrgb" output="$(arg output)"> -->
+      <param name="subscribe_rgbd"   	type="bool"   value="false"/>
+      <param name="subscribe_odom_info" type="bool" value="false"/>
+      <!-- <param name="frame_id"         	type="string" value="d400_link"/> -->
+      <param name="odom_frame_id"    	type="string" value="t265_link"/>
+      <param name="wait_for_transform_duration" type="double"   value="0.4"/>
+      <param name="queue_size"       	type="int"	value="50"/>
+      <param name="approx_sync"      	type="bool"   value="true"/>
+
+
+
+      <!--remap from="rgb/image" to="/camera/rgb/image_rect_color"/-->
+      <!--remap from="depth/image" to="/camera/depth_registered/image_raw"/-->
+      <!--remap from="rgb/camera_info" to="/camera/rgb/camera_info"/-->
+      <!--remap from="rgbd_image"   to="/camera/rgb/image_rect_color"/-->
+      <remap from="rgb/image" to="/d435/color/image_raw"/>
+      <remap from="depth/image" to="/d435/aligned_depth_to_color/image_raw"/>
+      <remap from="rgb/camera_info" to="/d435/color/camera_info"/>
+      <remap from="odom"      to="/odometry/filtered"/>
+  	</node>
+  </group>
+</launch>

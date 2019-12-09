@@ -1,0 +1,20 @@
+<launch>
+
+    <!-- Maping Node -->
+    <node pkg="gmapping" type="slam_gmapping" name="gmapping_node" output="screen" >
+        <param name="odom_frame" value="t265_odom_frame"/>
+        <param name="map_update_interval" value="2"/>
+        <param name="maxUrange" value="5"/>
+        <param name="minimumScore" value="500"/>
+        <param name="particles" value="400"/>
+        <param name="delta" value="0.05"/>
+        <param name="linearUpdate" value="0.01"/>
+        <param name="angularUpdate" value="0.01"/>    
+        
+        
+        <remap from="odom" to="/t265/odom/sample" />
+
+
+    </node>
+
+</launch>
