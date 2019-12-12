@@ -1,0 +1,6 @@
+<launch>
+<include file="$(find realsense2_camera)/launch/rs_d400_and_t265.launch"/>
+<include file="laser.launch"/>
+<include file="serial.launch"/>
+<include file="move_base.launch"/>    
+</launch>

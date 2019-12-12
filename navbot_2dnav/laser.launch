@@ -1,0 +1,13 @@
+<launch>
+<node pkg="tf" type="static_transform_publisher" name="tffornavbot" args="-0.14 0 -0.10 0 0 0 1 t265_link base_link 100" />
+
+    <!--- Depth image to laser scan -->
+    <node pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" name="depthimage_to_laserscan" >
+        <param name="scan_height" value="120"/> 
+        <param name="output_frame_id" value="d435_depth_frame"/>
+	<param name="range_min" value="0.01"/>
+	<param name="range_max" value="3"/>
+        <remap from="image" to="/d435/depth/image_rect_raw" />
+    </node>
+
+</launch>
