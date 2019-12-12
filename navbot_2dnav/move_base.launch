@@ -2,7 +2,7 @@
 
    <master auto="start"/>
  <!-- Run the map server --> 
-    <node name="map_server" pkg="map_server" type="map_server" args="/home/infyblr/navbot/b32_new.yaml">
+    <node name="map_server" pkg="map_server" type="map_server" args="/home/stg/navbot/b45.yaml">
     <param name="frame_id" value="map" />
     </node>
 
